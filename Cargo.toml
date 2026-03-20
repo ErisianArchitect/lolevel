@@ -4,6 +4,7 @@ description = "Low level utility library."
 authors = ["ErisianArchitect <github.com/ErisianArchitect>"]
 repository = "https://github.com/ErisianArchitect/lolevel"
 documentation = "https://docs.rs/lolevel"
+license = "MIT"
 version = "0.1.0"
 edition = "2024"
 
