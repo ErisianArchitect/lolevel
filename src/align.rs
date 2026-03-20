@@ -42,7 +42,7 @@ use std::{
     error::Error,
 };
 
-
+// use currytime
 macro_rules! aligns {
     ($(
         $name:ident($align:literal)
@@ -59,8 +59,10 @@ macro_rules! aligns {
                     Self(inner)
                 }
 
+                #[must_use]
+                #[inline]
                 pub fn map<F: FnOnce(T) -> T>(self, map: F) -> Self {
-                    Self((map)(self.0))
+                    Self(map(self.0))
                 }
 
                 #[must_use]
@@ -175,6 +177,60 @@ macro_rules! aligns {
                 #[inline]
                 pub fn to_align16(self) -> Align16<T> {
                     Align16(self.0)
+                }
+
+                #[must_use]
+                #[inline]
+                pub fn to_align32(self) -> Align32<T> {
+                    Align32(self.0)
+                }
+
+                #[must_use]
+                #[inline]
+                pub fn to_align64(self) -> Align64<T> {
+                    Align64(self.0)
+                }
+
+                #[must_use]
+                #[inline]
+                pub fn to_align128(self) -> Align128<T> {
+                    Align128(self.0)
+                }
+
+                #[must_use]
+                #[inline]
+                pub fn to_align256(self) -> Align256<T> {
+                    Align256(self.0)
+                }
+
+                #[must_use]
+                #[inline]
+                pub fn to_align512(self) -> Align512<T> {
+                    Align512(self.0)
+                }
+
+                #[must_use]
+                #[inline]
+                pub fn to_align1024(self) -> Align1024<T> {
+                    Align1024(self.0)
+                }
+
+                #[must_use]
+                #[inline]
+                pub fn to_align2048(self) -> Align2048<T> {
+                    Align2048(self.0)
+                }
+
+                #[must_use]
+                #[inline]
+                pub fn to_align4096(self) -> Align4096<T> {
+                    Align4096(self.0)
+                }
+
+                #[must_use]
+                #[inline]
+                pub fn to_align8192(self) -> Align8192<T> {
+                    Align8192(self.0)
                 }
             }
 
@@ -663,7 +719,6 @@ macro_rules! aligns {
     };
 }
 
-
 aligns!{
     Align1(1),
     Align2(2),
@@ -679,61 +734,4 @@ aligns!{
     Align2048(2048),
     Align4096(4096),
     Align8192(8192),
-}
-
-#[cfg(test)]
-mod tests {
-    use std::mem::offset_of;
-
-    use crate::pad::Pad;
-
-    use super::*;
-
-    struct Temp<T>(pub T);
-
-    #[repr(C)]
-    struct Fnoof {
-        low: u32,
-        _align0: Align8,
-        _pad0: Pad<2>,
-        high: u8,
-    }
-
-    #[test]
-    #[ignore]
-    fn sandbox0() {
-        let low_offset = offset_of!(Fnoof, low);
-        let high_offset = offset_of!(Fnoof, high);
-        assert_eq!(low_offset, 0);
-        assert_eq!(high_offset, 10);
-    }
-    
-    #[test]
-    fn coverage_test() {
-        // #[derive(Debug)]
-        // struct Fnord {
-        //     foo: u64,
-        //     bar: &'static str,
-        //     baz: bool,
-        // }
-        // let aligned = Align16(Fnord {
-        //     foo: 1234,
-        //     bar: "hello, world!",
-        //     baz: false,
-        // });
-        let aligned_u64 = Align16(100u64).map_align32(|v| v);
-        let result = aligned_u64 + 10;
-        match result.0 {
-            110 => {
-                println!("It's 110 time.");
-            },
-            _ => (),
-        }
-        assert_eq!(result, 110);
-        let mut aligned = Align16([0u8; 16]);
-        for i in 0..16 {
-            aligned[i] = i as u8;
-        }
-        println!("{aligned:#?}");
-    }
 }

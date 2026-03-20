@@ -17,3 +17,9 @@ impl<const SIZE: usize> Pad<SIZE> {
         Self::zeroes()
     }
 }
+
+#[must_use]
+#[inline]
+pub const fn pad<const SIZE: usize>() -> Pad<SIZE> {
+    Pad::zeroes()
+}

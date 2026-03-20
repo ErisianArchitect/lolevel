@@ -77,24 +77,9 @@ pub const fn substr(s: &str, range: Range<usize>) -> &str {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    trait Foo<T> {
-        fn bar(self, value: T) -> impl FnOnce();
-    }
-
-    impl<T, F: FnOnce(T)> Foo<T> for F {
-        fn bar(self, value: T) -> impl FnOnce() {
-            #[inline(always)] move || (self)(value)
-        }
-    }
-
-    fn foobar(value: &str) {
-    }
     
     #[test]
-    fn substr_test() {
-        let foo_hello = foobar.bar("Hello");
-        foo_hello();
+    fn split_test() {
         let mut items: [u32; 16] = [
             00, 01, 02, 03,
             04, 05, 06, 07,
