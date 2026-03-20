@@ -1,5 +1,9 @@
 [package]
 name = "lolevel"
+description = "Low level utility library."
+authors = ["ErisianArchitect <github.com/ErisianArchitect>"]
+repository = "https://github.com/ErisianArchitect/lolevel"
+documentation = "https://docs.rs/lolevel"
 version = "0.1.0"
 edition = "2024"
 
