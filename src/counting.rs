@@ -7,6 +7,7 @@ use std::{
 pub struct RefCounter {
     count: AtomicU32,
 }
+const _: () = crate::checks::assert_same_size_align::<RefCounter, AtomicU32>();
 
 impl RefCounter {
     #[inline(always)]
