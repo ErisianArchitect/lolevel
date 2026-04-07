@@ -11,8 +11,8 @@ const _: () = crate::checks::assert_same_size_align::<RefCounter, AtomicU32>();
 
 impl RefCounter {
     #[inline(always)]
-    pub fn new() -> Self {
-        Self { count: AtomicU32::new(0) }
+    pub fn new(count: u32) -> Self {
+        Self { count: AtomicU32::new(count) }
     }
 
     #[inline(always)]
