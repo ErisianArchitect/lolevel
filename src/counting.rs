@@ -26,16 +26,17 @@ impl RefCounter {
         self.count.fetch_add(1, Ordering::AcqRel)
     }
 
-    // Decrements and returns Ok(true) when the count has reached 0.
-    pub fn decrement(&self) -> Result<bool, ()> {
+    // Decrements and returns Ok(new_count).
+    pub fn decrement(&self) -> Result<u32, ()> {
         // cas loop for decrementing so that we do not decrement beyond 0.
         let mut count = self.count.load(Ordering::Relaxed);
         loop {
             if count == 0 {
                 return Err(());
             }
-            match self.count.compare_exchange(count, count-1, Ordering::AcqRel, Ordering::Relaxed) {
-                Ok(previous) => return Ok(previous == 1),
+            let decremented_count = count - 1;
+            match self.count.compare_exchange(count, decremented_count, Ordering::AcqRel, Ordering::Relaxed) {
+                Ok(_) => return Ok(decremented_count),
                 Err(previous) => {
                     count = previous;
                     std::hint::spin_loop();
