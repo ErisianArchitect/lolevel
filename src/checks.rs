@@ -127,10 +127,10 @@ const _: () = assert_compatible_size_align::<u8, u32>();
 /// Assert that `T` is pointer sized.
 #[track_caller]
 #[inline(always)]
-pub const fn assert_pointer_sized<T>() {
+pub const fn assert_pointer_size_align<T>() {
     assert_same_size_align::<T, usize>()
 }
-const _: () = assert_pointer_sized::<*const ()>();
+const _: () = assert_pointer_size_align::<*const ()>();
 
 /// Assert that the size and alignment of `T` is less than the size and alignment of a pointer.
 #[track_caller]
