@@ -1,5 +1,13 @@
 use std::{num::NonZero, ptr::NonNull};
 
+#[track_caller]
+#[inline(always)]
+pub const fn const_assert(assert_condition: bool) {
+    if !assert_condition {
+        panic!("Assertion failed.");
+    }
+}
+
 /// Assert that the size of `T` matches `SIZE`
 #[track_caller]
 #[inline(always)]
