@@ -1,0 +1,1 @@
+This library is in development. Expect very frequent breaking changes. Do not rely on this library if you need something stable. There will be bugs.
