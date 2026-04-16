@@ -23,7 +23,7 @@ impl RefCounter {
     /// Increments the count and returns the previous count.
     #[inline(always)]
     pub fn increment(&self) -> u32 {
-        self.count.fetch_add(1, Ordering::AcqRel)
+        self.count.fetch_add(1, Ordering::SeqCst)
     }
 
     // Decrements and returns `Ok(new_count)`.
@@ -36,7 +36,7 @@ impl RefCounter {
         }
         loop {
             let decremented_count = count - 1;
-            match self.count.compare_exchange(count, decremented_count, Ordering::AcqRel, Ordering::Relaxed) {
+            match self.count.compare_exchange(count, decremented_count, Ordering::SeqCst, Ordering::Relaxed) {
                 Ok(_) => return Ok(decremented_count),
                 Err(0) => return Err(()),
                 Err(previous) => count = previous,
