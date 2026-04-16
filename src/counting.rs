@@ -26,7 +26,8 @@ impl RefCounter {
         self.count.fetch_add(1, Ordering::AcqRel)
     }
 
-    // Decrements and returns Ok(new_count).
+    // Decrements and returns `Ok(new_count)`.
+    // Returns `Err(())` if count was already 0.
     pub fn decrement(&self) -> Result<u32, ()> {
         // cas loop for decrementing so that we do not decrement beyond 0.
         let mut count = self.count.load(Ordering::Relaxed);
