@@ -19,7 +19,7 @@ pub const fn subslice_mut<T>(slice: &mut [T], range: Range<usize>) -> &mut [T] {
     }
 }
 
-pub const fn split<T>(slice: &[T], split_index: usize) -> (&[T], &[T]) {
+pub const fn split<'a, T>(slice: &'a [T], split_index: usize) -> (&'a [T], &'a [T]) {
     let end = slice.len();
     assert!(split_index <= end, "Index out of bounds.");
     let right_len = end - split_index;
@@ -31,7 +31,7 @@ pub const fn split<T>(slice: &[T], split_index: usize) -> (&[T], &[T]) {
     }
 }
 
-pub const fn split_mut<T>(slice: &mut [T], split_index: usize) -> (&mut [T], &mut [T]) {
+pub const fn split_mut<'a, T>(slice: &'a mut [T], split_index: usize) -> (&'a mut [T], &'a mut [T]) {
     let end = slice.len();
     assert!(split_index <= end, "Index out of bounds.");
     let right_len = end - split_index;
@@ -43,7 +43,7 @@ pub const fn split_mut<T>(slice: &mut [T], split_index: usize) -> (&mut [T], &mu
     }
 }
 
-pub const fn half_split<T>(slice: &[T]) -> (&[T], &[T]) {
+pub const fn half_split<'a, T>(slice: &'a [T]) -> (&'a [T], &'a [T]) {
     let mid = slice.len() / 2;
     let left_len = mid;
     let right_len = slice.len() - mid;
@@ -55,7 +55,7 @@ pub const fn half_split<T>(slice: &[T]) -> (&[T], &[T]) {
     }
 }
 
-pub const fn half_split_mut<T>(slice: &mut [T]) -> (&mut [T], &mut [T]) {
+pub const fn half_split_mut<'a, T>(slice: &'a mut [T]) -> (&'a mut [T], &'a mut [T]) {
     let mid = slice.len() / 2;
     let left_len = mid;
     let right_len = slice.len() - mid;
