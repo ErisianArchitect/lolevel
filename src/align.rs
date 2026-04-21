@@ -1,45 +1,19 @@
 use std::{
-    fmt::{
-        Binary,
-        LowerExp, UpperExp,
-        LowerHex, UpperHex,
-        Octal,
-        Pointer,
-        Write as FmtWrite,
-        Debug,  Display,
-    },
-    marker::{
-        Send, Sync,
-    },
-    net::{
-        ToSocketAddrs,
-    },
-    ops::{
-        Deref,  DerefMut,
-        Index,  IndexMut,
-        Add,    AddAssign,
-        Sub,    SubAssign,
-        Mul,    MulAssign,
-        Div,    DivAssign,
-        Rem,    RemAssign,
-        Shl,    ShlAssign,
-        Shr,    ShrAssign,
-        BitAnd, BitAndAssign,
-        BitOr,  BitOrAssign,
-        BitXor, BitXorAssign,
-        Neg,    Not,
-    },
-    borrow::{
-        Borrow, BorrowMut,
-    },
-    convert::{
-        AsRef, AsMut,
-    },
-    cmp::{
-        PartialEq,
-        PartialOrd,
-    },
+    borrow::{Borrow, BorrowMut},
+    cmp::{PartialEq, PartialOrd},
+    convert::{AsMut, AsRef},
     error::Error,
+    fmt::{
+        Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex,
+        Write as FmtWrite,
+    },
+    marker::{Send, Sync},
+    net::ToSocketAddrs,
+    ops::{
+        Add, AddAssign, BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Deref,
+        DerefMut, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Not, Rem, RemAssign, Shl,
+        ShlAssign, Shr, ShrAssign, Sub, SubAssign,
+    },
 };
 
 // use currytime
@@ -355,7 +329,7 @@ macro_rules! aligns {
 
             unsafe impl<T: Send> Send for $name<T> {}
             unsafe impl<T: Sync> Sync for $name<T> {}
-            
+
             impl<T: ToSocketAddrs> ToSocketAddrs for $name<T> {
                 type Iter = T::Iter;
 
@@ -500,14 +474,14 @@ macro_rules! aligns {
                     Self(self.0.div(rhs))
                 }
             }
-            
+
             impl<T: DivAssign<T>> DivAssign<Self> for $name<T> {
                 #[inline]
                 fn div_assign(&mut self, rhs: Self) {
                     self.0.div_assign(rhs.0);
                 }
             }
-            
+
             impl<T: DivAssign<T>> DivAssign<T> for $name<T> {
                 #[inline]
                 fn div_assign(&mut self, rhs: T) {
@@ -719,7 +693,7 @@ macro_rules! aligns {
     };
 }
 
-aligns!{
+aligns! {
     Align1(1),
     Align2(2),
     Align4(4),

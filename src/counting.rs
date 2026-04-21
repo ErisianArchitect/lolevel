@@ -1,6 +1,4 @@
-use std::{
-    sync::atomic::{AtomicU32, Ordering},
-};
+use std::sync::atomic::{AtomicU32, Ordering};
 
 #[repr(transparent)]
 #[derive(Debug)]
@@ -12,7 +10,9 @@ const _: () = crate::checks::assert_same_size_align::<RefCounter, AtomicU32>();
 impl RefCounter {
     #[inline(always)]
     pub fn new(count: u32) -> Self {
-        Self { count: AtomicU32::new(count) }
+        Self {
+            count: AtomicU32::new(count),
+        }
     }
 
     #[inline(always)]
@@ -36,7 +36,12 @@ impl RefCounter {
         }
         loop {
             let decremented_count = count - 1;
-            match self.count.compare_exchange(count, decremented_count, Ordering::SeqCst, Ordering::Relaxed) {
+            match self.count.compare_exchange(
+                count,
+                decremented_count,
+                Ordering::SeqCst,
+                Ordering::Relaxed,
+            ) {
                 Ok(_) => return Ok(decremented_count),
                 Err(0) => return Err(()),
                 Err(previous) => count = previous,

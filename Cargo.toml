@@ -9,4 +9,15 @@ readme = "README.md"
 version = "0.6.1-indev"
 edition = "2024"
 
+[workspace]
+members = ["./crates/*", "crates/lolevel-macros"]
+
 [dependencies]
+lolevel-macros = { workspace = true, optional = true }
+
+[workspace.dependencies]
+lolevel-macros = { path = "./crates/lolevel-macros", version = "0.1.0" }
+
+[features]
+default = []
+macros = ["dep:lolevel-macros"]
