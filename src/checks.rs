@@ -1,5 +1,7 @@
 use std::{num::NonZero, ptr::NonNull};
 
+use crate::{meta::{ImpossibleZst}, niche::{Niche255}};
+
 /* All Checks Available:
 pub const fn const_assert(assert_condition: bool)
 
@@ -54,8 +56,74 @@ pub const fn assert_zst<T>()
 #[track_caller]
 #[inline(always)]
 pub const fn const_assert(assert_condition: bool) {
-    _ = assert_condition || panic!("Assertion failed.");
+    _ = assert_condition || panic!("Assertion failed");
 }
+const _: () = const_assert(true);
+
+#[must_use]
+#[inline(always)]
+pub const fn all_condition<const SIZE: usize>(conditions: [bool; SIZE]) -> bool {
+    let mut index = 0;
+    while index < SIZE {
+        _ = conditions[index] || return false;
+        index += 1;
+    }
+    true
+}
+
+#[track_caller]
+#[inline(always)]
+pub const fn const_assert_all<const SIZE: usize>(assertions: [bool; SIZE]) {
+    _ = all_condition(assertions) || panic!("Assertion failed");
+}
+const _: () = const_assert_all([
+    true,
+    true,
+]);
+
+#[must_use]
+#[inline(always)]
+pub const fn any_condition<const SIZE: usize>(conditions: [bool; SIZE]) -> bool {
+    let mut index = 0;
+    while index < SIZE {
+        _ = conditions[index] && return true;
+        index += 1;
+    }
+    false
+}
+
+#[track_caller]
+#[inline(always)]
+pub const fn const_assert_any<const SIZE: usize>(assertions: [bool; SIZE]) {
+    _ = any_condition(assertions) || panic!("Assertion failed");
+}
+const _: () = const_assert_any([
+    false,
+    false,
+    true,
+]);
+
+#[must_use]
+#[inline(always)]
+pub const fn none_condition<const SIZE: usize>(conditions: [bool; SIZE]) -> bool {
+    let mut index = 0;
+    while index < SIZE {
+        _ = conditions[index] && return false;
+        index += 1;
+    }
+    true
+}
+
+#[track_caller]
+#[inline(always)]
+pub const fn const_assert_none<const SIZE: usize>(assertions: [bool; SIZE]) {
+    _ = none_condition(assertions) || panic!("Assertion failed");
+}
+const _: () = const_assert_none([
+    false,
+    false,
+    false,
+]);
 
 #[must_use]
 #[inline(always)]
@@ -67,7 +135,7 @@ pub const fn size_condition<T, const SIZE: usize>() -> bool {
 #[track_caller]
 #[inline(always)]
 pub const fn assert_size<T, const SIZE: usize>() {
-    _ = size_condition::<T, SIZE>() || panic!("Size mismatch.");
+    _ = size_condition::<T, SIZE>() || panic!("Size mismatch");
 }
 const _: () = assert_size::<u8, 1>();
 
@@ -94,7 +162,7 @@ pub const fn same_size_condition<L, R>() -> bool {
 #[track_caller]
 #[inline(always)]
 pub const fn assert_same_size<L, R>() {
-    _ = same_size_condition::<L, R>() || panic!("Size mismatch.");
+    _ = same_size_condition::<L, R>() || panic!("Size mismatch");
 }
 const _: () = assert_same_size::<u8, i8>();
 
@@ -682,8 +750,39 @@ pub const fn not_zst_condition<T>() -> bool {
     const { !size_condition::<T, 0>() }
 }
 
+#[track_caller]
+#[inline(always)]
 pub const fn assert_not_zst<T>() {
-    
+    assert_not_size::<T, 0>();
 }
+
+#[must_use]
+#[inline(always)]
+pub const fn impossible_zst_condition<T>() -> bool {
+    zst_condition::<T>() && byte_niche_condition::<Niche255<T>>()
+}
+
+#[track_caller]
+#[inline(always)]
+pub const fn assert_impossible_zst<T>() {
+    _=zst_condition::<T>() || panic!("Not a zst.");
+    _=byte_niche_condition::<Niche255<T>>() || panic!("Not impossible to create");
+}
+const _: () = assert_impossible_zst::<ImpossibleZst>();
+
+// const _: () = {
+//     const_assert_all([
+//         size_of::<PackedTuple<ImpossibleZst, u8>>() == 1,
+//         size_of::<Option<Niche255<PackedTuple<ImpossibleZst, u64>>>>() == 9,
+//         size_of::<Option<Niche255<PackedTuple<OneVariant, u64>>>>() == 10,
+//         size_of::<Option<Niche255<PackedTuple<(), u64>>>>() == 10,
+//     ]);
+// };
+
+// const _: () = {
+//     assert_niche::<Niche255<Tuple<ImpossibleZst, ImpossibleZst>>>();
+//     assert_niche::<Niche255<Tuple<ImpossibleZstStruct, ImpossibleZstStruct>>>();
+//     assert_niche::<Niche255<Tuple<ImpossibleZstStruct, ImpossibleZstStruct>>>();
+// };
 
 // TODO: When const traits become available, add assert_same_type.
