@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "lolevel"
-version = "0.6.1-indev"
+version = "0.7.0-indev"
 dependencies = [
  "lolevel-macros",
 ]
