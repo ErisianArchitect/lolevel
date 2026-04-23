@@ -6,7 +6,7 @@ repository = "https://github.com/ErisianArchitect/lolevel"
 documentation = "https://docs.rs/lolevel"
 license = "MIT"
 readme = "README.md"
-version = "0.7.0-indev"
+version = "1.0.0-indev"
 edition = "2024"
 
 [workspace]

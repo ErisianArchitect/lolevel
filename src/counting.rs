@@ -1,13 +1,13 @@
-use std::sync::atomic::{AtomicU32, Ordering};
+use std::sync::atomic::{AtomicU32, AtomicUsize, Ordering};
 
 #[repr(transparent)]
 #[derive(Debug)]
-pub struct RefCounter {
+pub struct RefCounter32 {
     count: AtomicU32,
 }
-const _: () = crate::checks::assert_same_size_align::<RefCounter, AtomicU32>();
+const _: () = crate::checks::assert_same_size_align::<RefCounter32, AtomicU32>();
 
-impl RefCounter {
+impl RefCounter32 {
     #[inline(always)]
     pub fn new(count: u32) -> Self {
         Self {
@@ -29,6 +29,57 @@ impl RefCounter {
     // Decrements and returns `Ok(new_count)`.
     // Returns `Err(())` if count was already 0.
     pub fn decrement(&self) -> Result<u32, ()> {
+        // cas loop for decrementing so that we do not decrement beyond 0.
+        let mut count = self.count.load(Ordering::Relaxed);
+        if count == 0 {
+            return Err(());
+        }
+        loop {
+            let decremented_count = count - 1;
+            match self.count.compare_exchange(
+                count,
+                decremented_count,
+                Ordering::SeqCst,
+                Ordering::Relaxed,
+            ) {
+                Ok(_) => return Ok(decremented_count),
+                Err(0) => return Err(()),
+                Err(previous) => count = previous,
+            }
+            std::hint::spin_loop();
+        }
+    }
+}
+
+#[repr(transparent)]
+#[derive(Debug)]
+pub struct RefCounter {
+    count: AtomicUsize,
+}
+const _: () = crate::checks::assert_same_size_align::<RefCounter, AtomicUsize>();
+
+impl RefCounter {
+    #[inline(always)]
+    pub fn new(count: usize) -> Self {
+        Self {
+            count: AtomicUsize::new(count),
+        }
+    }
+
+    #[inline(always)]
+    pub fn count(&self) -> usize {
+        self.count.load(Ordering::Acquire)
+    }
+
+    /// Increments the count and returns the previous count.
+    #[inline(always)]
+    pub fn increment(&self) -> usize {
+        self.count.fetch_add(1, Ordering::SeqCst)
+    }
+
+    // Decrements and returns `Ok(new_count)`.
+    // Returns `Err(())` if count was already 0.
+    pub fn decrement(&self) -> Result<usize, ()> {
         // cas loop for decrementing so that we do not decrement beyond 0.
         let mut count = self.count.load(Ordering::Relaxed);
         if count == 0 {
